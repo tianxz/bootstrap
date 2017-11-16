@@ -1,5 +1,5 @@
 <table role="grid" aria-labelledby="{{::uniqueId}}-title" aria-activedescendant="{{activeDateId}}">
-    <thead>
+    <thead ng-if="!onlyTimeMode">
     <tr>
         <th>
             <button type="button" class="btn btn-default btn-sm pull-left uib-left" ng-click="move(-1)" tabindex="-1"><i
@@ -19,34 +19,45 @@
     </tr>
     </thead>
     <tbody>
-    <tr class="uib-years">
+    <tr class="uib-months">
         <td colspan="3">
             <div style="margin: 10px;">
                 <div class="input-group" style="margin-bottom: 10px;">
                     <span class="input-group-addon">时</span>
-                    <input uib-hour-valid type="text" class="form-control text-center" onfocus="this.select()" ng-model="time.hour">
+                    <input uib-hour-valid type="text" class="form-control text-center" onfocus="this.select()"
+                           ng-model="time.hour">
                     <div class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="minus('h')"><i class="glyphicon glyphicon glyphicon-minus"></i></button>
-                        <button type="button" class="btn btn-default" ng-click="plus('h')"><i class="glyphicon glyphicon glyphicon-plus"></i></button>
+                        <button type="button" class="btn btn-default" ng-click="minus('h')"><i
+                                class="glyphicon glyphicon glyphicon-minus"></i></button>
+                        <button type="button" class="btn btn-default" ng-click="plus('h')"><i
+                                class="glyphicon glyphicon glyphicon-plus"></i></button>
                     </div>
                 </div>
                 <div class="input-group" style="margin-bottom: 10px;">
                     <span class="input-group-addon">分</span>
-                    <input uib-hour-valid type="text" class="form-control text-center" onfocus="this.select()" ng-model="time.minute">
+                    <input uib-minute-valid type="text" class="form-control text-center" onfocus="this.select()"
+                           ng-model="time.minute">
                     <div class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="minus('m')"><i class="glyphicon glyphicon glyphicon-minus"></i></button>
-                        <button type="button" class="btn btn-default" ng-click="plus('m')"><i class="glyphicon glyphicon glyphicon-plus"></i></button>
+                        <button type="button" class="btn btn-default" ng-click="minus('m')"><i
+                                class="glyphicon glyphicon glyphicon-minus"></i></button>
+                        <button type="button" class="btn btn-default" ng-click="plus('m')"><i
+                                class="glyphicon glyphicon glyphicon-plus"></i></button>
                     </div>
                 </div>
                 <div class="input-group" style="margin-bottom: 10px;">
                     <span class="input-group-addon">秒</span>
-                    <input uib-hour-valid type="text" class="form-control text-center" onfocus="this.select()" ng-model="time.second">
+                    <input uib-minute-valid type="text" class="form-control text-center" onfocus="this.select()"
+                           ng-model="time.second">
                     <div class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="minus('s')"><i class="glyphicon glyphicon glyphicon-minus"></i></button>
-                        <button type="button" class="btn btn-default" ng-click="plus('s')"><i class="glyphicon glyphicon glyphicon-plus"></i></button>
+                        <button type="button" class="btn btn-default" ng-click="minus('s')"><i
+                                class="glyphicon glyphicon glyphicon-minus"></i></button>
+                        <button type="button" class="btn btn-default" ng-click="plus('s')"><i
+                                class="glyphicon glyphicon glyphicon-plus"></i></button>
                     </div>
                 </div>
-                <button class="btn btn-default btn-sm btn-block" ng-click="select(selectedDt)">{{selectedDt | date : formatFullTime}}</button>
+                <button class="btn btn-default btn-sm btn-block" ng-click="select(selectedDt)">{{selectedDt | date :
+                    formatFullTime}}
+                </button>
             </div>
         </td>
     </tr>

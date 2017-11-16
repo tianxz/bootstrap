@@ -389,7 +389,7 @@ module.exports = function(grunt) {
 
     var exec = require('child_process').exec;
 
-    var versionsMappingFile = 'dist/versions-mapping.json';
+    var versionsMappingFile = 'dist/bootstrap/versions-mapping.json';
 
     exec('git tag --sort -version:refname', function(error, stdout, stderr) {
       // Let's remove the oldest 14 versions.

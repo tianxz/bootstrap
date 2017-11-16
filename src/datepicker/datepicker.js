@@ -13,11 +13,12 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
     formatDayTitle: 'MMMM yyyy',
     formatMonthTitle: 'yyyy',
     formatTimeTitle: 'MMM dd yyyy',
-    formatFullTime: 'yyyy-MM-dd HH:mm:ss',
+    formatFullTime: 'MMM dd yyyy, HH:mm:ss',
+    onlyTimeMode: false,
     maxDate: null,
     maxMode: 'year',
     minDate: null,
-    minMode: 'time',
+    minMode: 'day',
     monthColumns: 3,
     ngModelOptions: {},
     shortcutPropagation: false,
@@ -55,6 +56,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
         'formatYear',
         'formatTimeTitle',
         'formatFullTime',
+        'onlyTimeMode',
         'maxDate',
         'maxMode',
         'minDate',
@@ -86,6 +88,20 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
             self[key] = angular.isDefined($scope.datepickerOptions[key]) ?
               $interpolate($scope.datepickerOptions[key])($scope.$parent) :
               datepickerConfig[key];
+            break;
+          case 'onlyTimeMode':
+            if (angular.isDefined($scope.datepickerOptions[key]) && $scope.datepickerOptions[key]) {
+              self[key] = $scope.datepickerOptions[key];
+              self['formatFullTime'] = 'HH:mm:ss';
+              if (angular.isDefined($scope.datepickerOptions['formatFullTime'])) {
+                $scope.datepickerOptions = 'HH:mm:ss';
+              }
+
+              $scope.onlyTimeMode = self[key];
+              $scope.datepickerOptions.onlyTimeMode = self[key];
+
+              $scope.datepickerMode = $scope.datepickerOptions.datepickerMode = $scope.minMode = $scope.datepickerOptions.minMode = 'time';
+            }
             break;
           case 'monthColumns':
           case 'showWeeks':
@@ -126,7 +142,6 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
 
               self.refreshView();
             });
-
             break;
           case 'maxMode':
           case 'minMode':
@@ -144,7 +159,6 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
             } else {
               self[key] = $scope[key] = datepickerConfig[key] || null;
             }
-
             break;
         }
       });
@@ -275,9 +289,12 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
         if ($scope.datepickerMode === self.minMode) {
           var dt = ngModelCtrl.$viewValue ? dateParser.fromTimezone(new Date(ngModelCtrl.$viewValue), ngModelOptions.timezone) : new Date(0, 0, 0, 0, 0, 0, 0);
           dt.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+          dt.setHours(date.getHours(), date.getMinutes(), date.getSeconds());
           dt = dateParser.toTimezone(dt, ngModelOptions.timezone);
           ngModelCtrl.$setViewValue(dt);
           ngModelCtrl.$render();
+
+          setMode(self.modes[1]);
         } else {
           self.activeDate = date;
           setMode(self.modes[self.modes.indexOf($scope.datepickerMode) - 1]);
@@ -290,8 +307,9 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
 
       $scope.move = function (direction) {
         var year = self.activeDate.getFullYear() + direction * (self.step.years || 0),
-          month = self.activeDate.getMonth() + direction * (self.step.months || 0);
-        self.activeDate.setFullYear(year, month, 1);
+          month = self.activeDate.getMonth() + direction * (self.step.months || 0),
+          day = self.activeDate.getDate() + direction * (self.step.days || 0);
+        self.activeDate.setFullYear(year, month, day);
         self.refreshView();
       };
 
@@ -603,11 +621,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
 
   .controller('UibHmstimepickerController', ['$scope', '$element', 'dateFilter', '$log', '$filter', function (scope, $element, dateFilter, log, filter) {
     this.element = $element;
-    var time = {
-      hour: 0,
-      minute: 0,
-      second: 0
-    };
+    this.step = {days: 1};
 
     this.init = function (ctrl) {
       angular.extend(ctrl, this);
@@ -617,7 +631,11 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
     this._refreshView = function () {
       scope.title = dateFilter(this.activeDate, this.formatTimeTitle);
       scope.selectedDt = this.activeDate;
-      scope.time = time;
+      scope.time = {
+        hour: this.activeDate.getHours(),
+        minute: this.activeDate.getMinutes(),
+        second: this.activeDate.getSeconds()
+      };
       scope.minus = minus;
       scope.plus = plus;
       scope.formatFullTime = this.formatFullTime;
@@ -683,6 +701,9 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
       }
     }
 
+    this.compare = function (date1, date2) {
+      return 0;
+    };
   }])
 
   .directive('uibDatepicker', function () {
@@ -784,6 +805,30 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
             validValue = 0;
           }
           if (validValue > 23) {
+            validValue = 0;
+          }
+          var newValue = ('00' + validValue).substr(-2);
+          modelCtrl.$setViewValue(newValue);
+          modelCtrl.$render();
+          return newValue;
+        });
+        modelCtrl.$formatters.unshift(function (val) {
+          return ('00' + val).substr(-2);
+        })
+      }
+    };
+  })
+
+  .directive('uibMinuteValid', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, element, attrs, modelCtrl) {
+        modelCtrl.$parsers.push(function (inputValue) {
+          var validValue = parseInt(inputValue, 10);
+          if (!validValue) {
+            validValue = 0;
+          }
+          if (validValue > 59) {
             validValue = 0;
           }
           var newValue = ('00' + validValue).substr(-2);

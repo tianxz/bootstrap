@@ -1,10 +1,10 @@
 angular.module('ui.bootstrap.demo').controller('DatepickerPopupDemoCtrl', function ($scope) {
-  $scope.today = function() {
+  $scope.today = function () {
     $scope.dt = new Date();
   };
   $scope.today();
 
-  $scope.clear = function() {
+  $scope.clear = function () {
     $scope.dt = null;
   };
 
@@ -19,7 +19,9 @@ angular.module('ui.bootstrap.demo').controller('DatepickerPopupDemoCtrl', functi
     formatYear: 'yy',
     maxDate: new Date(2020, 5, 22),
     minDate: new Date(),
-    startingDay: 1
+    startingDay: 1,
+    minMode: 'time',
+    datepickerMode: 'day'
   };
 
   // Disable weekend selection
@@ -29,26 +31,26 @@ angular.module('ui.bootstrap.demo').controller('DatepickerPopupDemoCtrl', functi
     return mode === 'day' && (date.getDay() === 0 || date.getDay() === 6);
   }
 
-  $scope.toggleMin = function() {
+  $scope.toggleMin = function () {
     $scope.inlineOptions.minDate = $scope.inlineOptions.minDate ? null : new Date();
     $scope.dateOptions.minDate = $scope.inlineOptions.minDate;
   };
 
   $scope.toggleMin();
 
-  $scope.open1 = function() {
+  $scope.open1 = function () {
     $scope.popup1.opened = true;
   };
 
-  $scope.open2 = function() {
+  $scope.open2 = function () {
     $scope.popup2.opened = true;
   };
 
-  $scope.setDate = function(year, month, day) {
+  $scope.setDate = function (year, month, day) {
     $scope.dt = new Date(year, month, day);
   };
 
-  $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+  $scope.formats = ['yyyy-MM-dd HH:mm:ss', 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
   $scope.format = $scope.formats[0];
   $scope.altInputFormats = ['M!/d!/yyyy'];
 
@@ -79,10 +81,10 @@ angular.module('ui.bootstrap.demo').controller('DatepickerPopupDemoCtrl', functi
     var date = data.date,
       mode = data.mode;
     if (mode === 'day') {
-      var dayToCheck = new Date(date).setHours(0,0,0,0);
+      var dayToCheck = new Date(date).setHours(0, 0, 0, 0);
 
       for (var i = 0; i < $scope.events.length; i++) {
-        var currentDay = new Date($scope.events[i].date).setHours(0,0,0,0);
+        var currentDay = new Date($scope.events[i].date).setHours(0, 0, 0, 0);
 
         if (dayToCheck === currentDay) {
           return $scope.events[i].status;
